@@ -84,94 +84,71 @@
         "outputType": "object"
       },
       {
-        "name": "",
-        "module": "core",
-        "action": "condition",
+        "name": "update",
+        "module": "dbupdater",
+        "action": "update",
         "options": {
-          "if": "{{query}}",
-          "then": {
-            "steps": [
+          "connection": "dados",
+          "sql": {
+            "type": "update",
+            "values": [
               {
-                "name": "update",
-                "module": "dbupdater",
-                "action": "update",
-                "options": {
-                  "connection": "dados",
-                  "sql": {
-                    "type": "update",
-                    "values": [
-                      {
-                        "table": "links",
-                        "column": "views",
-                        "type": "number",
-                        "value": "{{query.views+1}}"
-                      }
-                    ],
-                    "table": "links",
-                    "wheres": {
-                      "condition": "AND",
-                      "rules": [
-                        {
-                          "id": "url_shortener",
-                          "field": "url_shortener",
-                          "type": "string",
-                          "operator": "equal",
-                          "value": "{{$_PARAM.url}}",
-                          "data": {
-                            "column": "url_shortener"
-                          },
-                          "operation": "="
-                        }
-                      ],
-                      "conditional": null,
-                      "valid": true
-                    },
-                    "returning": "id",
-                    "query": "UPDATE links\nSET views = :P1 /* {{query.views+1}} */\nWHERE url_shortener = :P2 /* {{$_PARAM.url}} */",
-                    "params": [
-                      {
-                        "name": ":P1",
-                        "type": "expression",
-                        "value": "{{query.views+1}}"
-                      },
-                      {
-                        "operator": "equal",
-                        "type": "expression",
-                        "name": ":P2",
-                        "value": "{{$_PARAM.url}}"
-                      }
-                    ]
-                  }
-                },
-                "meta": [
-                  {
-                    "name": "affected",
-                    "type": "number"
-                  }
-                ]
+                "table": "links",
+                "column": "views",
+                "type": "number",
+                "value": "{{(query.views+1)}}"
+              }
+            ],
+            "table": "links",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "url_shortener",
+                  "field": "url_shortener",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_PARAM.url}}",
+                  "data": {
+                    "column": "url_shortener"
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "returning": "id",
+            "query": "UPDATE links\nSET views = :P1 /* {{(query.views+1)}} */\nWHERE url_shortener = :P2 /* {{$_PARAM.url}} */",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{(query.views+1)}}"
               },
               {
-                "name": "",
-                "module": "core",
-                "action": "redirect",
-                "options": {
-                  "url": "{{query.url_shortener}}"
-                }
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P2",
+                "value": "{{$_PARAM.url}}"
               }
             ]
-          },
-          "else": {
-            "steps": {
-              "name": "",
-              "module": "core",
-              "action": "redirect",
-              "options": {
-                "url": "/"
-              }
-            }
           }
         },
-        "outputType": "boolean"
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "",
+        "module": "core",
+        "action": "redirect",
+        "options": {
+          "url": "{{query.url_full}}"
+        }
       }
     ]
   }

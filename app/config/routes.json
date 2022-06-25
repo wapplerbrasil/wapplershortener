@@ -3,8 +3,12 @@
     {
       "path": "/",
       "page": "index",
-      "routeType": "page",
-      "layout": "main"
+      "layout": "main",
+      "method": "get"
+    },
+    {
+      "path": "/:url",
+      "exec": "/api/links/get_url"
     }
   ]
 }
