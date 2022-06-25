@@ -1,0 +1,12 @@
+{
+  "name": "dados",
+  "module": "dbconnector",
+  "action": "connect",
+  "options": {
+    "client": "sqlite3",
+    "connection": {
+      "filename": "/app/db.sqlite3"
+    }
+  },
+  "fileName": "dados.json"
+}
