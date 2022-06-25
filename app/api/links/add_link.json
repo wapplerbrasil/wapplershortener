@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "$_POST": [
+      {
+        "type": "text",
+        "name": "url_full"
+      }
+    ],
+    "$_SERVER": [
+      {
+        "type": "text",
+        "name": "BASE_URL"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "insert_link",
+        "module": "dbupdater",
+        "action": "insert",
+        "options": {
+          "connection": "dados",
+          "sql": {
+            "type": "insert",
+            "values": [
+              {
+                "table": "links",
+                "column": "url_full",
+                "type": "text",
+                "value": "{{$_POST.url_full}}"
+              },
+              {
+                "table": "links",
+                "column": "url_shortener",
+                "type": "text",
+                "value": "{{UUID.substr(-4, 4)}}"
+              },
+              {
+                "table": "links",
+                "column": "views",
+                "type": "number",
+                "value": "0"
+              }
+            ],
+            "table": "links",
+            "returning": "id",
+            "query": "INSERT INTO links\n(url_full, url_shortener, views) VALUES (:P1 /* {{$_POST.url_full}} */, :P2 /* {{UUID.substr(-4, 4)}} */, '0')",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{$_POST.url_full}}"
+              },
+              {
+                "name": ":P2",
+                "type": "expression",
+                "value": "{{UUID.substr(-4, 4)}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "identity",
+            "type": "text"
+          },
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "single",
+        "options": {
+          "connection": "dados",
+          "sql": {
+            "type": "SELECT",
+            "columns": [],
+            "table": {
+              "name": "links"
+            },
+            "primary": "id",
+            "joins": [],
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "links.id",
+                  "field": "links.id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{insert_link.identity}}",
+                  "data": {
+                    "table": "links",
+                    "column": "id",
+                    "type": "number",
+                    "columnObj": {
+                      "type": "increments",
+                      "primary": true,
+                      "unique": false,
+                      "nullable": false,
+                      "name": "id"
+                    }
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "SELECT *\nFROM links\nWHERE id = :P1 /* {{insert_link.identity}} */",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{insert_link.identity}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "type": "number",
+            "name": "id"
+          },
+          {
+            "type": "text",
+            "name": "url_full"
+          },
+          {
+            "type": "text",
+            "name": "url_shortener"
+          },
+          {
+            "type": "number",
+            "name": "views"
+          }
+        ],
+        "outputType": "object"
+      },
+      {
+        "name": "url_pronta",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "{{$_SERVER.BASE_URL+'/'+query.url_shortener}}"
+        },
+        "meta": [],
+        "output": true,
+        "outputType": "text"
+      }
+    ]
+  }
+}

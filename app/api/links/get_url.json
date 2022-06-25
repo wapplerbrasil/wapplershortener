@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "$_PARAM": [
+      {
+        "type": "text",
+        "name": "url"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "single",
+        "options": {
+          "connection": "dados",
+          "sql": {
+            "type": "SELECT",
+            "columns": [],
+            "table": {
+              "name": "links"
+            },
+            "primary": "id",
+            "joins": [],
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "links.url_shortener",
+                  "field": "links.url_shortener",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_PARAM.url}}",
+                  "data": {
+                    "table": "links",
+                    "column": "url_shortener",
+                    "type": "text",
+                    "columnObj": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "primary": false,
+                      "unique": false,
+                      "nullable": true,
+                      "name": "url_shortener"
+                    }
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "SELECT *\nFROM links\nWHERE url_shortener = :P1 /* {{$_PARAM.url}} */",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_PARAM.url}}"
+              }
+            ]
+          }
+        },
+        "output": false,
+        "meta": [
+          {
+            "type": "number",
+            "name": "id"
+          },
+          {
+            "type": "text",
+            "name": "url_full"
+          },
+          {
+            "type": "text",
+            "name": "url_shortener"
+          },
+          {
+            "type": "number",
+            "name": "views"
+          }
+        ],
+        "outputType": "object"
+      },
+      {
+        "name": "",
+        "module": "core",
+        "action": "condition",
+        "options": {
+          "if": "{{query}}",
+          "then": {
+            "steps": [
+              {
+                "name": "update",
+                "module": "dbupdater",
+                "action": "update",
+                "options": {
+                  "connection": "dados",
+                  "sql": {
+                    "type": "update",
+                    "values": [
+                      {
+                        "table": "links",
+                        "column": "views",
+                        "type": "number",
+                        "value": "{{query.views+1}}"
+                      }
+                    ],
+                    "table": "links",
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "url_shortener",
+                          "field": "url_shortener",
+                          "type": "string",
+                          "operator": "equal",
+                          "value": "{{$_PARAM.url}}",
+                          "data": {
+                            "column": "url_shortener"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "returning": "id",
+                    "query": "UPDATE links\nSET views = :P1 /* {{query.views+1}} */\nWHERE url_shortener = :P2 /* {{$_PARAM.url}} */",
+                    "params": [
+                      {
+                        "name": ":P1",
+                        "type": "expression",
+                        "value": "{{query.views+1}}"
+                      },
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P2",
+                        "value": "{{$_PARAM.url}}"
+                      }
+                    ]
+                  }
+                },
+                "meta": [
+                  {
+                    "name": "affected",
+                    "type": "number"
+                  }
+                ]
+              },
+              {
+                "name": "",
+                "module": "core",
+                "action": "redirect",
+                "options": {
+                  "url": "{{query.url_shortener}}"
+                }
+              }
+            ]
+          },
+          "else": {
+            "steps": {
+              "name": "",
+              "module": "core",
+              "action": "redirect",
+              "options": {
+                "url": "/"
+              }
+            }
+          }
+        },
+        "outputType": "boolean"
+      }
+    ]
+  }
+}

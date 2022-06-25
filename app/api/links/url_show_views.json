@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "url"
+      }
+    ]
+  },
+  "exec": {
+    "steps": {
+      "name": "query",
+      "module": "dbconnector",
+      "action": "single",
+      "options": {
+        "connection": "dados",
+        "sql": {
+          "type": "SELECT",
+          "columns": [],
+          "table": {
+            "name": "links"
+          },
+          "primary": "id",
+          "joins": [],
+          "wheres": {
+            "condition": "AND",
+            "rules": [
+              {
+                "id": "links.url_shortener",
+                "field": "links.url_shortener",
+                "type": "string",
+                "operator": "equal",
+                "value": "{{$_GET.url}}",
+                "data": {
+                  "table": "links",
+                  "column": "url_shortener",
+                  "type": "text",
+                  "columnObj": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "primary": false,
+                    "unique": false,
+                    "nullable": true,
+                    "name": "url_shortener"
+                  }
+                },
+                "operation": "="
+              }
+            ],
+            "conditional": null,
+            "valid": true
+          },
+          "query": "SELECT *\nFROM links\nWHERE url_shortener = :P1 /* {{$_GET.url}} */",
+          "params": [
+            {
+              "operator": "equal",
+              "type": "expression",
+              "name": ":P1",
+              "value": "{{$_GET.url}}"
+            }
+          ]
+        }
+      },
+      "output": true,
+      "meta": [
+        {
+          "type": "number",
+          "name": "id"
+        },
+        {
+          "type": "text",
+          "name": "url_full"
+        },
+        {
+          "type": "text",
+          "name": "url_shortener"
+        },
+        {
+          "type": "number",
+          "name": "views"
+        }
+      ],
+      "outputType": "object"
+    }
+  }
+}
