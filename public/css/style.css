@@ -1,0 +1,5 @@
+.bg-geral {
+    background-size: cover;
+    background-position: center top;
+    background-image: url("../assets/images/bg_geral.jpg");
+}
