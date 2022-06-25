@@ -34,14 +34,6 @@
               "unique": false,
               "nullable": true
             }
-          },
-          "views": {
-            "db": {
-              "type": "float",
-              "primary": false,
-              "unique": false,
-              "nullable": true
-            }
           }
         }
       }
