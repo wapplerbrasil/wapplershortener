@@ -30,7 +30,7 @@
                 "field": "links.url_shortener",
                 "type": "string",
                 "operator": "equal",
-                "value": "{{$_GET.url}}",
+                "value": "{{url_shortener}}",
                 "data": {
                   "table": "links",
                   "column": "url_shortener",
@@ -50,13 +50,13 @@
             "conditional": null,
             "valid": true
           },
-          "query": "SELECT *\nFROM links\nWHERE url_shortener = :P1 /* {{$_GET.url}} */",
+          "query": "SELECT *\nFROM links\nWHERE url_shortener = :P1 /* {{url_shortener}} */",
           "params": [
             {
               "operator": "equal",
               "type": "expression",
               "name": ":P1",
-              "value": "{{$_GET.url}}"
+              "value": "{{url_shortener}}"
             }
           ]
         }

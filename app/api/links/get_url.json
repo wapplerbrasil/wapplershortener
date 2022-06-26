@@ -145,10 +145,31 @@
       {
         "name": "",
         "module": "core",
-        "action": "redirect",
+        "action": "condition",
         "options": {
-          "url": "{{query.url_full}}"
-        }
+          "if": "{{query}}",
+          "then": {
+            "steps": {
+              "name": "r1",
+              "module": "core",
+              "action": "redirect",
+              "options": {
+                "url": "{{query.url_full}}"
+              }
+            }
+          },
+          "else": {
+            "steps": {
+              "name": "r2",
+              "module": "core",
+              "action": "redirect",
+              "options": {
+                "url": "/"
+              }
+            }
+          }
+        },
+        "outputType": "boolean"
       }
     ]
   }
