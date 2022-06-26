@@ -1,4 +1,5 @@
 <!-- Wappler include head-page="layouts/main" fontawesome_5="cdn" bootstrap5="local" is="dmx-app" id="index" appconnect="local" class="bg-geral" -->
+<dmx-serverconnect id="api_get_url_views" url="/api/links/url_show_views" dmx-param:url="form1.url_curta.value"></dmx-serverconnect>
 <header class="pt-3">
     <div class="container">
         <div class="row">
@@ -25,7 +26,15 @@
                             <button id="btn1" class="btn w-100 btn-primary mt-2" type="submit"><i class="fas fa-link fa-fw"></i>Gerar url curta</button>
                             <div class="row mt-3" is="dmx-if" id="conditional1" dmx-bind:condition="form1.data.url_pronta">
                                 <div class="col">
-                                    <a href="#" class="btn btn-outline-secondary" dmx-bind:href="form1.data.url_pronta" target="_blank">{{form1.data.url_pronta}}</a>
+                                    <input type="text" class="form-control" name="texto" id="texto" dmx-bind:value="form1.data.url_pronta" />
+                                    <button class="btn btn-primary mt-2" onclick="copiarTexto()"><i class="far fa-copy fa-fw"></i>Copiar</button>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <p class="mb-0">Digite a <b>URL</b> para ver quantas visitas teve.</p>
+                                    <input id="url_curta" name="url_curta" type="text" class="form-control" placeholder="Digite a URL...">
+                                    <p class="mt-2" dmx-show="api_get_url_views.data.query">Esta <b>URL</b> teve (<b>{{api_get_url_views.data.query.views}}</b>) visitas.</p>
                                 </div>
                             </div>
                         </form>
@@ -36,3 +45,12 @@
     </div>
 </main>
 <meta name="ac:route" content="/">
+<script>
+    function copiarTexto() {
+        let textoCopiado = document.getElementById("texto");
+        textoCopiado.select();
+        textoCopiado.setSelectionRange(0, 99999)
+        document.execCommand("copy");
+        alert("Link copiado: " + textoCopiado.value);
+    }
+</script>
