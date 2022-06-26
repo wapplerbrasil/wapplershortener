@@ -8,7 +8,8 @@
     },
     {
       "path": "/:url",
-      "exec": "/api/links/get_url"
+      "exec": "/api/links/get_url",
+      "method": "get"
     }
   ]
 }
